@@ -8,7 +8,7 @@ function loadGeoJSON(supabaseData) {
         "type": "FeatureCollection",
         "features": supabaseData.map(item => {
             if (!item.geom) {
-                console.warn("Missing geometry in item:", item);
+                console.warn("Missing geometry for item:", item);
                 return null;
             }
 
@@ -20,7 +20,7 @@ function loadGeoJSON(supabaseData) {
                         "name": item.name || "No Name",
                         "grup": item.grup || "No Group"
                     },
-                    "geometry": JSON.parse(item.geom)  // Convert string to JSON object
+                    "geometry": JSON.parse(item.geom)  // Convert JSON string to object
                 };
             } catch (error) {
                 console.error("Error parsing geometry for item:", item, error);
@@ -31,7 +31,12 @@ function loadGeoJSON(supabaseData) {
 
     console.log("Final GeoJSON for Map:", geojson);
 
-    // Add GeoJSON data to the existing map
+    // Check if there are valid features before adding them to the map
+    if (geojson.features.length === 0) {
+        console.warn("No valid features found, skipping map update.");
+        return;
+    }
+
     L.geoJSON(geojson, {
         style: function(feature) {
             return {
@@ -46,5 +51,5 @@ function loadGeoJSON(supabaseData) {
                 layer.bindPopup(popupContent);
             }
         }
-    }).addTo(map);  // Uses the existing map from map.js
+    }).addTo(map);
 }
