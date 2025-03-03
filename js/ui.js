@@ -12,20 +12,24 @@ function loadGeoJSON(supabaseData) {
                 return null;
             }
 
+            let geometry;
             try {
-                return {
-                    "type": "Feature",
-                    "properties": {
-                        "uid": item.uid || "Unknown",
-                        "name": item.name || "No Name",
-                        "grup": item.grup || "No Group"
-                    },
-                    "geometry": JSON.parse(item.geom)  // Convert JSON string to object
-                };
+                // If `geom` is an object, use it directly; otherwise, parse it
+                geometry = typeof item.geom === "string" ? JSON.parse(item.geom) : item.geom;
             } catch (error) {
                 console.error("Error parsing geometry for item:", item, error);
                 return null;
             }
+
+            return {
+                "type": "Feature",
+                "properties": {
+                    "uid": item.UID || "Unknown",
+                    "name": item["Nama Lokasi"] || "No Name",
+                    "pemegang_wilus": item["Pemegang Wilus"] || "No Group"
+                },
+                "geometry": geometry
+            };
         }).filter(feature => feature !== null)  // Remove invalid features
     };
 
@@ -47,7 +51,7 @@ function loadGeoJSON(supabaseData) {
         },
         onEachFeature: function(feature, layer) {
             if (feature.properties) {
-                let popupContent = `<b>${feature.properties.name}</b><br>Group: ${feature.properties.grup}`;
+                let popupContent = `<b>${feature.properties.name}</b><br>Pemegang Wilus: ${feature.properties.pemegang_wilus}`;
                 layer.bindPopup(popupContent);
             }
         }
