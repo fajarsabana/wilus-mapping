@@ -14,8 +14,8 @@ function loadGeoJSON(supabaseData) {
 
             let geometry;
             try {
-                // If `geom` is an object, use it directly; otherwise, parse it
-                geometry = typeof item.geom === "string" ? JSON.parse(item.geom) : item.geom;
+                // If `geom` is already an object, use it directly; otherwise, parse it
+                geometry = (typeof item.geom === "object") ? item.geom : JSON.parse(item.geom);
             } catch (error) {
                 console.error("Error parsing geometry for item:", item, error);
                 return null;
