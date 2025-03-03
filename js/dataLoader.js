@@ -22,6 +22,9 @@ async function loadData() {
             throw new Error("Supabase response is not an array or is empty.");
         }
 
+        console.log("Raw Supabase Data:", data);
+        console.log("First Item Example:", data[0]);
+
         loadGeoJSON(data);
     } catch (error) {
         console.error("Error loading data from Supabase:", error);
