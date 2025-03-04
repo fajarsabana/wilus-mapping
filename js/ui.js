@@ -2,14 +2,16 @@ function populateCompanyFilters(companiesAndLocations) {
     const filterContainer = document.getElementById("company-filters");
     filterContainer.innerHTML = ""; 
 
-    companiesAndLocations.forEach(item => {
+    // ✅ Ensure "Pemegang Wilus" is used instead of UID
+    const uniqueWilus = [...new Set(companiesAndLocations.map(item => item.pemegang_wilus))];
+
+    uniqueWilus.forEach(pemegangWilus => {
         let listItem = document.createElement("div");
         listItem.className = "company-item";
-        listItem.textContent = `${item.pemegang_wilus} - ${item.nama_lokasi}`;
-        listItem.dataset.uid = item.uid;
+        listItem.textContent = pemegangWilus;
 
         listItem.addEventListener("click", function() {
-            zoomToFeature(item.uid);
+            zoomToFeature(pemegangWilus);
         });
 
         filterContainer.appendChild(listItem);
