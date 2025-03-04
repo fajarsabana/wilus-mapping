@@ -1,45 +1,86 @@
-function populateCompanyFilters(companies) {
+function populateCompanyFilters(companiesAndLocations) {
     const filterContainer = document.getElementById("company-filters");
     filterContainer.innerHTML = ""; 
 
-    companies.forEach(company => {
-        let checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = company;
-        checkbox.id = `filter-${company}`;
-        checkbox.checked = true;
+    companiesAndLocations.forEach(item => {
+        let listItem = document.createElement("div");
+        listItem.className = "company-item";
+        listItem.textContent = `${item.pemegang_wilus} - ${item.nama_lokasi}`;
+        listItem.dataset.uid = item.uid; // Store UID to find it on the map
 
-        let label = document.createElement("label");
-        label.htmlFor = `filter-${company}`;
-        label.textContent = company;
+        // ✅ On click, zoom to that feature
+        listItem.addEventListener("click", function() {
+            zoomToFeature(item.uid);
+        });
 
-        let div = document.createElement("div");
-        div.appendChild(checkbox);
-        div.appendChild(label);
-
-        filterContainer.appendChild(div);
+        filterContainer.appendChild(listItem);
     });
-
-    // ✅ FIX: Ensure the filter event listener is added correctly
-    document.getElementById("company-filters").addEventListener("change", applyFilters);
 }
 
-function applyFilters() {
-    const selectedCompanies = [...document.querySelectorAll('#company-filters input:checked')].map(el => el.value);
-    console.log("Selected Companies:", selectedCompanies); // Debugging
-
+// ✅ Function to zoom into the selected feature
+function zoomToFeature(uid) {
     if (!geojsonLayer) {
-        console.error("GeoJSON Layer not found!");
+        console.error("GeoJSON Layer not loaded yet!");
         return;
     }
 
-    // ✅ FIX: Apply filtering based on company selection
+    let targetLayer = null;
     geojsonLayer.eachLayer(layer => {
-        const company = layer.feature.properties.pemegang_wilus;
-        if (selectedCompanies.includes(company)) {
-            layer.setStyle({ opacity: 1, fillOpacity: 0.5 });
-        } else {
-            layer.setStyle({ opacity: 0, fillOpacity: 0 });
+        if (layer.feature.properties.uid === uid) {
+            targetLayer = layer;
         }
     });
+
+    if (targetLayer) {
+        map.fitBounds(targetLayer.getBounds()); // Zoom to feature
+        targetLayer.openPopup(); // Show popup
+    } else {
+        console.warn("Feature not found for UID:", uid);
+    }
+}
+
+// ✅ Modify `loadGeoJSON` to generate a list of "Pemegang Wilus" & "Nama Lokasi"
+function loadGeoJSON(supabaseData) {
+    if (!supabaseData || !Array.isArray(supabaseData)) {
+        console.error("Invalid GeoJSON data from Supabase:", supabaseData);
+        return;
+    }
+
+    geojsonData = {
+        "type": "FeatureCollection",
+        "features": supabaseData.map(item => {
+            if (!item["geom"]) {
+                console.warn("Missing geometry for item:", item);
+                return null;
+            }
+
+            let geometry;
+            try {
+                geometry = (typeof item["geom"] === "object") ? item["geom"] : JSON.parse(item["geom"]);
+            } catch (error) {
+                console.error("Error parsing geometry for item:", item, error);
+                return null;
+            }
+
+            return {
+                "type": "Feature",
+                "properties": {
+                    "uid": item["UID"] || "Unknown",
+                    "name": item["Nama Lokasi"] || "No Name",
+                    "pemegang_wilus": item["Pemegang Wilus"] || "No Group"
+                },
+                "geometry": geometry
+            };
+        }).filter(feature => feature !== null)
+    };
+
+    console.log("Final GeoJSON for Map:", geojsonData);
+    updateMap(geojsonData);
+
+    // ✅ Pass list of names & companies for sidebar listing
+    populateCompanyFilters(supabaseData.map(item => ({
+        uid: item["UID"],
+        nama_lokasi: item["Nama Lokasi"],
+        pemegang_wilus: item["Pemegang Wilus"]
+    })));
 }
