@@ -16,7 +16,6 @@ function populateCompanyFilters(companiesAndLocations) {
     });
 }
 
-// ✅ Fix Zoom Issue
 function zoomToFeature(uid) {
     if (!geojsonLayer) {
         console.error("GeoJSON Layer not loaded yet!");
@@ -32,17 +31,26 @@ function zoomToFeature(uid) {
 
     if (targetLayer) {
         try {
+            // ✅ Cek apakah fitur punya bounds (area), kalau tidak, zoom ke titiknya
             const bounds = targetLayer.getBounds();
             if (bounds.isValid()) {
-                map.fitBounds(bounds);
+                map.fitBounds(bounds, { padding: [50, 50] });
                 targetLayer.openPopup();
             } else {
-                console.warn("Invalid bounds for feature:", uid);
+                console.warn(`Invalid bounds for feature ${uid}, using setView instead.`);
+                const latlng = targetLayer.getLatLng ? targetLayer.getLatLng() : null;
+                if (latlng) {
+                    map.setView(latlng, 14); // Gunakan zoom level 14 untuk titik
+                    targetLayer.openPopup();
+                } else {
+                    console.warn(`Feature ${uid} has no valid bounds or coordinates.`);
+                }
             }
         } catch (error) {
             console.error("Error zooming to feature:", uid, error);
         }
     } else {
-        console.warn("Feature not found for UID:", uid);
+        console.warn(`Feature not found for UID: ${uid}`);
     }
 }
+
