@@ -26,16 +26,21 @@ body, html {
     overflow-y: auto;
     width: 280px;
 }
-
-/* ✅ Style for clickable list */
+/* ✅ Tambahkan padding dan garis pemisah antar item */
 .company-item {
     padding: 8px;
     background: #f8f9fa;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
+    display: block; /* Memastikan tiap item ada di baris baru */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .company-item:hover {
     background: #007bff;
     color: white;
 }
+
+
