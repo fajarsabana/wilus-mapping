@@ -16,14 +16,33 @@ function populateCompanyFilters(companiesAndLocations) {
     });
 }
 
-function checkCoordinate() {
-    const lat = parseFloat(document.getElementById("latInput").value);
-    const lng = parseFloat(document.getElementById("lngInput").value);
-
-    if (isNaN(lat) || isNaN(lng)) {
-        document.getElementById("result").innerHTML = "⚠️ Masukkan koordinat yang valid!";
+// ✅ Fix Zoom Issue
+function zoomToFeature(uid) {
+    if (!geojsonLayer) {
+        console.error("GeoJSON Layer not loaded yet!");
         return;
     }
 
-    document.getElementById("result").innerHTML = "Cek koordinat berhasil!";
+    let targetLayer = null;
+    geojsonLayer.eachLayer(layer => {
+        if (layer.feature.properties.uid === uid) {
+            targetLayer = layer;
+        }
+    });
+
+    if (targetLayer) {
+        try {
+            const bounds = targetLayer.getBounds();
+            if (bounds.isValid()) {
+                map.fitBounds(bounds);
+                targetLayer.openPopup();
+            } else {
+                console.warn("Invalid bounds for feature:", uid);
+            }
+        } catch (error) {
+            console.error("Error zooming to feature:", uid, error);
+        }
+    } else {
+        console.warn("Feature not found for UID:", uid);
+    }
 }
