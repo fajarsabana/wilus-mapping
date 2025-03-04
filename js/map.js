@@ -1,9 +1,10 @@
 var map = L.map('map', {
-    center: [3.666854, 98.66797],
-    zoom: 6,
+    center: [-2.5489, 118.0149], // Center of Indonesia 🇮🇩
+    zoom: 5, // Adjust zoom to fit most of Indonesia
     scrollWheelZoom: true,
     zoomControl: true
 });
+
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
