@@ -1,59 +1,31 @@
-function loadGeoJSON(supabaseData) {
-    if (!supabaseData || !Array.isArray(supabaseData)) {
-        console.error("Invalid GeoJSON data from Supabase:", supabaseData);
-        return;
-    }
+function populateCompanyFilters(companies) {
+    const filterContainer = document.getElementById("company-filters");
+    filterContainer.innerHTML = ""; // Clear previous filters
 
-    let geojson = {
-        "type": "FeatureCollection",
-        "features": supabaseData.map(item => {
-            if (!item["geom"]) {
-                console.warn("Missing geometry for item:", item);
-                return null;
-            }
+    companies.forEach(company => {
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = company;
+        checkbox.id = `filter-${company}`;
+        checkbox.checked = true; // Default to checked
 
-            let geometry;
-            try {
-                // If `geom` is already an object, use it directly; otherwise, parse it
-                geometry = (typeof item["geom"] === "object") ? item["geom"] : JSON.parse(item["geom"]);
-            } catch (error) {
-                console.error("Error parsing geometry for item:", item, error);
-                return null;
-            }
+        let label = document.createElement("label");
+        label.htmlFor = `filter-${company}`;
+        label.textContent = company;
 
-            return {
-                "type": "Feature",
-                "properties": {
-                    "uid": item["UID"] || "Unknown",
-                    "name": item["Nama Lokasi"] || "No Name",
-                    "pemegang_wilus": item["Pemegang Wilus"] || "No Group"
-                },
-                "geometry": geometry
-            };
-        }).filter(feature => feature !== null)  // Remove invalid features
-    };
+        let div = document.createElement("div");
+        div.appendChild(checkbox);
+        div.appendChild(label);
 
-    console.log("Final GeoJSON for Map:", geojson);
-
-    // Check if there are valid features before adding them to the map
-    if (geojson.features.length === 0) {
-        console.warn("No valid features found, skipping map update.");
-        return;
-    }
-
-    L.geoJSON(geojson, {
-        style: function(feature) {
-            return {
-                color: "green",
-                weight: 2,
-                fillOpacity: 0.5
-            };
-        },
-        onEachFeature: function(feature, layer) {
-            if (feature.properties) {
-                let popupContent = `<b>${feature.properties.name}</b><br>Pemegang Wilus: ${feature.properties.pemegang_wilus}`;
-                layer.bindPopup(popupContent);
-            }
-        }
-    }).addTo(map);
+        filterContainer.appendChild(div);
+    });
 }
+
+async function loadDataAndApplyFilters() {
+    const data = await loadData();
+    const companies = [...new Set(data.map(item => item["Pemegang Wilus"]))];
+    populateCompanyFilters(companies);
+}
+
+document.getElementById("company-filters").addEventListener("change", applyFilters);
+loadDataAndApplyFilters();
