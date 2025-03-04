@@ -1,9 +1,10 @@
 var map = L.map('map', {
-    center: [-2.5489, 118.0149], // Center of Indonesia 🇮🇩
-    zoom: 5, // Adjust zoom to fit most of Indonesia
+    center: [-2.5, 120.0], // Adjusted center (closer to Central Sulawesi)
+    zoom: 5.2, // Slightly higher zoom to balance Java, Sumatra & Papua
     scrollWheelZoom: true,
     zoomControl: true
 });
+
 
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
