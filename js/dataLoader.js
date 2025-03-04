@@ -10,11 +10,11 @@ async function loadData() {
                 "Content-Type": "application/json"
             }
         });
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        
+
         const data = await response.json();
         console.log("Supabase API Response:", data);
         return data;
