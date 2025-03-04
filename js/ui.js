@@ -23,8 +23,22 @@ function populateCompanyFilters(companies) {
 
 async function loadDataAndApplyFilters() {
     const data = await loadData();
+    geojsonData = {
+        "type": "FeatureCollection",
+        "features": data.map(item => ({
+            "type": "Feature",
+            "properties": {
+                "UID": item.UID,
+                "name": item["Nama Lokasi"],
+                "company": item["Pemegang Wilus"]
+            },
+            "geometry": JSON.parse(item.geom) // Convert string to GeoJSON object
+        }))
+    };
+
     const companies = [...new Set(data.map(item => item["Pemegang Wilus"]))];
     populateCompanyFilters(companies);
+    updateMap(geojsonData);
 }
 
 document.getElementById("company-filters").addEventListener("change", applyFilters);
