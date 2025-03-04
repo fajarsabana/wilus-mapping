@@ -39,10 +39,10 @@ async function loadDataAndApplyFilters() {
         }))
     };
 
+    console.log("GeoJSON Data Loaded:", geojsonData); // Debugging
     const companies = [...new Set(data.map(item => item["Pemegang Wilus"]))];
     populateCompanyFilters(companies);
-
-    updateMap(geojsonData);
+    updateMap(geojsonData); // Show all shapes initially
 }
 
 document.addEventListener("DOMContentLoaded", loadDataAndApplyFilters);
