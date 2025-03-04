@@ -23,34 +23,37 @@ function zoomToFeature(uid) {
     }
 
     let targetLayer = null;
+
+    // ✅ Cari fitur berdasarkan UID yang sesuai
     geojsonLayer.eachLayer(layer => {
-        if (layer.feature.properties.uid === uid) {
+        if (layer.feature && layer.feature.properties && layer.feature.properties.uid === uid) {
             targetLayer = layer;
         }
     });
 
     if (targetLayer) {
         try {
-            // ✅ Cek apakah fitur punya bounds (area), kalau tidak, zoom ke titiknya
-            const bounds = targetLayer.getBounds();
-            if (bounds.isValid()) {
-                map.fitBounds(bounds, { padding: [50, 50] });
-                targetLayer.openPopup();
-            } else {
-                console.warn(`Invalid bounds for feature ${uid}, using setView instead.`);
-                const latlng = targetLayer.getLatLng ? targetLayer.getLatLng() : null;
-                if (latlng) {
-                    map.setView(latlng, 14); // Gunakan zoom level 14 untuk titik
+            if (targetLayer.getBounds) {
+                const bounds = targetLayer.getBounds();
+                if (bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [50, 50] });
                     targetLayer.openPopup();
-                } else {
-                    console.warn(`Feature ${uid} has no valid bounds or coordinates.`);
+                    return;
                 }
             }
+            
+            // ✅ Jika fitur tidak punya bounds (hanya titik), zoom ke titiknya
+            if (targetLayer.getLatLng) {
+                const latlng = targetLayer.getLatLng();
+                map.setView(latlng, 14);
+                targetLayer.openPopup();
+            } else {
+                console.warn(`Feature ${uid} has no valid bounds or coordinates.`);
+            }
         } catch (error) {
-            console.error("Error zooming to feature:", uid, error);
+            console.error(`Error zooming to feature UID: ${uid}`, error);
         }
     } else {
         console.warn(`Feature not found for UID: ${uid}`);
     }
 }
-
