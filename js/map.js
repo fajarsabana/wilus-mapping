@@ -1,9 +1,13 @@
 var map = L.map('map', {
-    center: [-2.5, 120.0], // Centered on Indonesia 🇮🇩
-    zoom: 5.2, // Adjusted zoom level to fit Indonesia
+    center: [-2.5489, 118.0149], // Center of Indonesia 🇮🇩
+    zoom: 5, // Adjust zoom to fit most of Indonesia
+    center: [-2.5, 120.0], // Adjusted center (closer to Central Sulawesi)
+    zoom: 5.2, // Slightly higher zoom to balance Java, Sumatra & Papua
     scrollWheelZoom: true,
     zoomControl: true
 });
+
+
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
@@ -13,15 +17,16 @@ map.getContainer().style.zIndex = "0";
 
 let geojsonLayer;
 
+// ✅ Restore getCompanyColor() function
 const companyColors = {};
 function getCompanyColor(company) {
     if (!companyColors[company]) {
-        companyColors[company] = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+        companyColors[company] = `#${Math.floor(Math.random()*16777215).toString(16)}`;
     }
     return companyColors[company];
 }
 
-// ✅ Store original styles for reset later
+// ✅ Fix JSON parsing issue & make sure it handles errors correctly
 function loadGeoJSON(supabaseData) {
     let geojson = {
         "type": "FeatureCollection",
@@ -43,12 +48,11 @@ function loadGeoJSON(supabaseData) {
                 "properties": {
                     "uid": item["UID"],
                     "name": item["Nama Lokasi"],
-                    "pemegang_wilus": item["Pemegang Wilus"],
-                    "originalColor": getCompanyColor(item["Pemegang Wilus"]) // Store original color
+                    "pemegang_wilus": item["Pemegang Wilus"]
                 },
                 "geometry": geometry
             };
-        }).filter(feature => feature !== null) // ✅ Remove broken entries
+        }).filter(feature => feature !== null)
     };
 
     if (geojsonLayer) {
@@ -57,11 +61,7 @@ function loadGeoJSON(supabaseData) {
 
     geojsonLayer = L.geoJSON(geojson, {
         style: function(feature) {
-            return { 
-                color: feature.properties.originalColor, 
-                weight: 2, 
-                fillOpacity: 0.5 
-            };
+            return { color: getCompanyColor(feature.properties.pemegang_wilus), weight: 2, fillOpacity: 0.5 };
         },
         onEachFeature: function(feature, layer) {
             layer.bindPopup(`<b>${feature.properties.name}</b><br>Pemegang Wilus: ${feature.properties.pemegang_wilus}`);
