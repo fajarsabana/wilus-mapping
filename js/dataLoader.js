@@ -16,7 +16,7 @@ async function loadData() {
         }
 
         const data = await response.json();
-        console.log("Supabase API Response:", data);
+        console.log("Supabase API Response:", data); // Debugging
         return data;
     } catch (error) {
         console.error("Error fetching data:", error);
