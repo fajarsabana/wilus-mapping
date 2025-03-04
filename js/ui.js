@@ -24,7 +24,7 @@ function zoomToFeature(uid) {
 
     let targetLayer = null;
 
-    // ✅ Cari fitur berdasarkan UID yang sesuai
+    // ✅ Cari fitur berdasarkan UID
     geojsonLayer.eachLayer(layer => {
         if (layer.feature && layer.feature.properties && layer.feature.properties.uid === uid) {
             targetLayer = layer;
@@ -33,7 +33,8 @@ function zoomToFeature(uid) {
 
     if (targetLayer) {
         try {
-            if (targetLayer.getBounds) {
+            // ✅ Jika fitur adalah polygon, gunakan fitBounds()
+            if (targetLayer.getBounds && typeof targetLayer.getBounds === "function") {
                 const bounds = targetLayer.getBounds();
                 if (bounds.isValid()) {
                     map.fitBounds(bounds, { padding: [50, 50] });
@@ -42,18 +43,25 @@ function zoomToFeature(uid) {
                 }
             }
             
-            // ✅ Jika fitur tidak punya bounds (hanya titik), zoom ke titiknya
-            if (targetLayer.getLatLng) {
+            // ✅ Jika fitur adalah titik, gunakan setView()
+            if (targetLayer.getLatLng && typeof targetLayer.getLatLng === "function") {
                 const latlng = targetLayer.getLatLng();
-                map.setView(latlng, 14);
-                targetLayer.openPopup();
-            } else {
-                console.warn(`Feature ${uid} has no valid bounds or coordinates.`);
+                if (latlng) {
+                    map.setView(latlng, 14); // Zoom level 14 untuk titik
+                    targetLayer.openPopup();
+                    return;
+                }
             }
+
+            // ❌ Jika tidak punya bounds atau koordinat, tampilkan peringatan
+            console.warn(`Feature UID "${uid}" has no valid bounds or coordinates.`);
+            alert(`Data untuk "${uid}" tidak memiliki lokasi yang bisa difokuskan.`);
         } catch (error) {
             console.error(`Error zooming to feature UID: ${uid}`, error);
         }
     } else {
-        console.warn(`Feature not found for UID: ${uid}`);
+        console.warn(`Feature UID "${uid}" tidak ditemukan.`);
+        alert(`Data untuk "${uid}" tidak ditemukan di peta.`);
     }
 }
+
