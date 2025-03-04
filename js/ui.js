@@ -16,63 +16,55 @@ function populateCompanyFilters(companiesAndLocations) {
     });
 }
 
-function zoomToFeature(uid) {
+function zoomToFeature(pemegangWilus) {
     if (!geojsonLayer) {
         console.error("GeoJSON Layer not loaded yet!");
         return;
     }
 
-    let targetLayer = null;
+    let targetLayers = [];
 
-    // ✅ Cari fitur yang benar-benar cocok dengan UID
+    // ✅ Find all features that belong to the selected "Pemegang Wilus"
     geojsonLayer.eachLayer(layer => {
-        if (layer.feature && layer.feature.properties && layer.feature.properties.uid.trim() === uid.trim()) {
-            targetLayer = layer;
+        if (layer.feature && layer.feature.properties && layer.feature.properties.pemegang_wilus.trim() === pemegangWilus.trim()) {
+            targetLayers.push(layer);
         }
     });
 
-    if (!targetLayer) {
-        console.warn(`❌ Feature dengan UID "${uid}" tidak ditemukan.`);
-        alert(`⚠️ Data untuk "${uid}" tidak ditemukan di peta.`);
+    if (targetLayers.length === 0) {
+        console.warn(`❌ No features found for Pemegang Wilus: "${pemegangWilus}"`);
+        alert(`⚠️ No location found for "${pemegangWilus}"`);
         return;
     }
 
-    try {
-        // ✅ Debugging: Pastikan kita menemukan UID yang benar
-        console.log(`🔍 Debugging UID "${uid}"`, targetLayer.feature);
+    console.log(`✅ Clicked on: ${pemegangWilus}`);
+    console.log("🔍 Found Features:", targetLayers);
 
-        if (!targetLayer.feature.geometry) {
-            console.warn(`❌ Feature UID "${uid}" tidak memiliki geometry.`);
-            alert(`⚠️ Data untuk "${uid}" tidak memiliki bentuk wilayah.`);
-            return;
-        }
+    let bounds = null;
+    let pointCoordinates = null;
 
-        // ✅ Jika fitur adalah polygon, gunakan fitBounds()
-        if (targetLayer.getBounds && typeof targetLayer.getBounds === "function") {
-            const bounds = targetLayer.getBounds();
-            if (bounds.isValid()) {
-                map.fitBounds(bounds, { padding: [50, 50] });
-                targetLayer.openPopup();
-                return;
+    targetLayers.forEach(layer => {
+        if (layer.feature.geometry.type === "Polygon" || layer.feature.geometry.type === "MultiPolygon") {
+            if (!bounds) {
+                bounds = layer.getBounds();
+            } else {
+                bounds.extend(layer.getBounds());
             }
+        } else if (layer.feature.geometry.type === "Point") {
+            pointCoordinates = layer.feature.geometry.coordinates;
         }
-        
-        // ✅ Jika fitur adalah titik, gunakan setView()
-        if (targetLayer.getLatLng && typeof targetLayer.getLatLng === "function") {
-            const latlng = targetLayer.getLatLng();
-            if (latlng) {
-                map.setView(latlng, 14); // Zoom level 14 untuk titik
-                targetLayer.openPopup();
-                return;
-            }
-        }
+    });
 
-        // ❌ Jika tidak punya bounds atau koordinat, tampilkan peringatan
-        console.warn(`❌ Feature UID "${uid}" tidak memiliki lokasi.`);
-        alert(`⚠️ Data untuk "${uid}" tidak memiliki lokasi yang bisa difokuskan.`);
-    } catch (error) {
-        console.error(`❌ Error saat zoom ke UID: ${uid}`, error);
+    // ✅ Log the selected "Pemegang Wilus" name & coordinates
+    if (bounds) {
+        console.log(`📍 Zooming to area of "${pemegangWilus}"`);
+        map.fitBounds(bounds, { padding: [50, 50] });
+    } else if (pointCoordinates) {
+        console.log(`📍 Zooming to point location of "${pemegangWilus}" at:`, pointCoordinates);
+        map.setView([pointCoordinates[1], pointCoordinates[0]], 14);
+    } else {
+        console.warn(`❌ "${pemegangWilus}" has no valid geometry`);
+        alert(`⚠️ No valid geometry for "${pemegangWilus}"`);
     }
 }
-
 
