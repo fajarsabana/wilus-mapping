@@ -1,10 +1,11 @@
 var map = L.map('map', {
     center: [3.666854, 98.66797],
-    zoom: 12,
+    zoom: 6,
     scrollWheelZoom: true,
     zoomControl: true
 });
 
+// Load OpenStreetMap tiles
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
@@ -24,6 +25,7 @@ function getCompanyColor(company) {
     return companyColors[company];
 }
 
+// Function to add data to the map
 function updateMap(filteredData) {
     if (geojsonLayer) {
         map.removeLayer(geojsonLayer);
@@ -39,8 +41,11 @@ function updateMap(filteredData) {
     }).addTo(map);
 }
 
+// Apply filter when checkboxes are clicked
 function applyFilters() {
     const selectedCompanies = [...document.querySelectorAll('#company-filters input:checked')].map(el => el.value);
     const filteredData = geojsonData.features.filter(feature => selectedCompanies.includes(feature.properties.company));
+
+    console.log("Filtered Data:", filteredData); // Debugging
     updateMap({ "type": "FeatureCollection", "features": filteredData });
 }
