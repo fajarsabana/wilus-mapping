@@ -8,7 +8,6 @@ function populateCompanyFilters(companiesAndLocations) {
         listItem.textContent = `${item.pemegang_wilus} - ${item.nama_lokasi}`;
         listItem.dataset.uid = item.uid;
 
-        // ✅ Clicking will zoom to that feature
         listItem.addEventListener("click", function() {
             zoomToFeature(item.uid);
         });
@@ -17,23 +16,14 @@ function populateCompanyFilters(companiesAndLocations) {
     });
 }
 
-function zoomToFeature(uid) {
-    if (!geojsonLayer) {
-        console.error("GeoJSON Layer not loaded yet!");
+function checkCoordinate() {
+    const lat = parseFloat(document.getElementById("latInput").value);
+    const lng = parseFloat(document.getElementById("lngInput").value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        document.getElementById("result").innerHTML = "⚠️ Masukkan koordinat yang valid!";
         return;
     }
 
-    let targetLayer = null;
-    geojsonLayer.eachLayer(layer => {
-        if (layer.feature.properties.uid === uid) {
-            targetLayer = layer;
-        }
-    });
-
-    if (targetLayer) {
-        map.fitBounds(targetLayer.getBounds());
-        targetLayer.openPopup();
-    } else {
-        console.warn("Feature not found for UID:", uid);
-    }
+    document.getElementById("result").innerHTML = "Cek koordinat berhasil!";
 }
