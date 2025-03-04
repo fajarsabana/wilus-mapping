@@ -3,7 +3,7 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 async function loadData() {
     try {
-        const response = await fetch(`${supabaseUrl}/rest/v1/wilus_mapping?select="UID","Nama Lokasi","Pemegang Wilus","geom"`, {
+        const response = await fetch(`${supabaseUrl}/rest/v1/wilus_mapping?select=UID,Nama Lokasi,Pemegang Wilus,geom`, {
             headers: {
                 "apikey": supabaseKey,
                 "Authorization": `Bearer ${supabaseKey}`,
