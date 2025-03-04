@@ -11,12 +11,13 @@ function populateCompanyFilters(companiesAndLocations) {
         listItem.textContent = pemegangWilus;
 
         listItem.addEventListener("click", function() {
-            zoomToFeature(pemegangWilus);
+            zoomToFeature(pemegangWilus); // ✅ NOW CORRECTLY FILTERS BY "Pemegang Wilus"
         });
 
         filterContainer.appendChild(listItem);
     });
 }
+
 
 function zoomToFeature(pemegangWilus) {
     if (!geojsonLayer) {
@@ -69,4 +70,3 @@ function zoomToFeature(pemegangWilus) {
         alert(`⚠️ No valid geometry for "${pemegangWilus}"`);
     }
 }
-
