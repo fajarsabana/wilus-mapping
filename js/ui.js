@@ -17,7 +17,6 @@ function populateCompanyFilters(companiesAndLocations) {
     });
 }
 
-// ✅ Function to zoom into the selected feature
 function zoomToFeature(uid) {
     if (!geojsonLayer) {
         console.error("GeoJSON Layer not loaded yet!");
@@ -32,8 +31,8 @@ function zoomToFeature(uid) {
     });
 
     if (targetLayer) {
-        map.fitBounds(targetLayer.getBounds()); // Zoom to feature
-        targetLayer.openPopup(); // Show popup
+        map.fitBounds(targetLayer.getBounds());
+        targetLayer.openPopup();
     } else {
         console.warn("Feature not found for UID:", uid);
     }
