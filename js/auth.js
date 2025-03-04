@@ -28,7 +28,10 @@ function login() {
 
 function checkAuthentication() {
     const isAuthenticated = localStorage.getItem("authenticated");
-    if (!isAuthenticated && window.location.pathname.includes("index.html")) {
+    console.log("Auth Check:", isAuthenticated); // Debugging
+
+    if (!isAuthenticated || isAuthenticated !== "true") {
+        console.log("Not authenticated! Redirecting to login...");
         window.location.href = "login.html";
     }
 }
