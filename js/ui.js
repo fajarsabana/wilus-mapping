@@ -8,7 +8,7 @@ function populateCompanyFilters(companiesAndLocations) {
         listItem.textContent = `${item.pemegang_wilus} - ${item.nama_lokasi}`;
         listItem.dataset.uid = item.uid;
 
-        // ✅ On click, zoom to that feature
+        // ✅ Clicking will zoom to that feature
         listItem.addEventListener("click", function() {
             zoomToFeature(item.uid);
         });
@@ -17,6 +17,7 @@ function populateCompanyFilters(companiesAndLocations) {
     });
 }
 
+// ✅ Function to zoom into the selected feature
 function zoomToFeature(uid) {
     if (!geojsonLayer) {
         console.error("GeoJSON Layer not loaded yet!");
@@ -31,8 +32,8 @@ function zoomToFeature(uid) {
     });
 
     if (targetLayer) {
-        map.fitBounds(targetLayer.getBounds());
-        targetLayer.openPopup();
+        map.fitBounds(targetLayer.getBounds()); // Zoom to feature
+        targetLayer.openPopup(); // Show popup
     } else {
         console.warn("Feature not found for UID:", uid);
     }
