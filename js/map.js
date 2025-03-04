@@ -13,19 +13,34 @@ map.getContainer().style.zIndex = "0";
 
 let geojsonLayer;
 
-// ✅ Fix JSON parsing issue
+// ✅ Fix JSON parsing once and for all
 function loadGeoJSON(supabaseData) {
     let geojson = {
         "type": "FeatureCollection",
-        "features": supabaseData.map(item => ({
-            "type": "Feature",
-            "properties": {
-                "uid": item["UID"],
-                "name": item["Nama Lokasi"],
-                "pemegang_wilus": item["Pemegang Wilus"]
-            },
-            "geometry": typeof item["geom"] === "string" ? JSON.parse(item["geom"]) : item["geom"] // FIXED
-        }))
+        "features": supabaseData.map(item => {
+            let geometry;
+            try {
+                // ✅ Ensure `geom` is parsed correctly
+                geometry = typeof item["geom"] === "string" ? JSON.parse(item["geom"]) : item["geom"];
+                if (!geometry || !geometry.type) {
+                    console.warn("Invalid geometry detected:", item);
+                    return null; // Skip invalid data
+                }
+            } catch (error) {
+                console.error("Error parsing geometry:", item, error);
+                return null; // Skip broken data
+            }
+
+            return {
+                "type": "Feature",
+                "properties": {
+                    "uid": item["UID"],
+                    "name": item["Nama Lokasi"],
+                    "pemegang_wilus": item["Pemegang Wilus"]
+                },
+                "geometry": geometry
+            };
+        }).filter(feature => feature !== null) // ✅ Remove broken entries
     };
 
     if (geojsonLayer) {
