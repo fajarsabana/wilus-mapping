@@ -13,16 +13,7 @@ map.getContainer().style.zIndex = "0";
 
 let geojsonLayer;
 
-// ✅ Color by "Pemegang Wilus"
-const companyColors = {};
-function getCompanyColor(company) {
-    if (!companyColors[company]) {
-        companyColors[company] = `#${Math.floor(Math.random()*16777215).toString(16)}`;
-    }
-    return companyColors[company];
-}
-
-// ✅ Load GeoJSON Data
+// ✅ Fix JSON parsing issue
 function loadGeoJSON(supabaseData) {
     let geojson = {
         "type": "FeatureCollection",
@@ -33,7 +24,7 @@ function loadGeoJSON(supabaseData) {
                 "name": item["Nama Lokasi"],
                 "pemegang_wilus": item["Pemegang Wilus"]
             },
-            "geometry": JSON.parse(item["geom"])
+            "geometry": typeof item["geom"] === "string" ? JSON.parse(item["geom"]) : item["geom"] // FIXED
         }))
     };
 
