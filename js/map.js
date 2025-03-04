@@ -15,7 +15,7 @@ map.getContainer().style.zIndex = "0";
 let geojsonLayer;
 let geojsonData = { "type": "FeatureCollection", "features": [] };
 
-// Generate a unique color for each company
+// 🔥 Generate a unique color for each company
 const companyColors = {};
 function getCompanyColor(company) {
     if (!companyColors[company]) {
@@ -29,9 +29,10 @@ function updateMap(filteredData) {
     if (geojsonLayer) {
         map.removeLayer(geojsonLayer);
     }
+    
     geojsonLayer = L.geoJSON(filteredData, {
         style: function(feature) {
-            return { color: getCompanyColor(feature.properties.company) };
+            return { color: getCompanyColor(feature.properties.company), weight: 2 };
         },
         onEachFeature: function (feature, layer) {
             layer.bindPopup(`<b>${feature.properties.name}</b><br>${feature.properties.company}`);
@@ -39,8 +40,18 @@ function updateMap(filteredData) {
     }).addTo(map);
 }
 
+// ✅ FIX: Ensure applyFilters updates the map properly
 function applyFilters() {
     const selectedCompanies = [...document.querySelectorAll('#company-filters input:checked')].map(el => el.value);
-    const filteredData = geojsonData.features.filter(feature => selectedCompanies.includes(feature.properties.company));
-    updateMap({ "type": "FeatureCollection", "features": filteredData });
+    
+    console.log("Applying filter. Selected companies:", selectedCompanies); // Debugging
+    
+    const filteredFeatures = geojsonData.features.filter(feature => selectedCompanies.includes(feature.properties.company));
+
+    updateMap({ "type": "FeatureCollection", "features": filteredFeatures });
 }
+
+// ✅ FIX: Ensure event listener is properly set up
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("company-filters").addEventListener("change", applyFilters);
+});
