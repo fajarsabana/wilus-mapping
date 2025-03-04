@@ -1,4 +1,3 @@
-// ✅ Reverting to the version that worked before
 var map = L.map('map', {
     center: [3.666854, 98.66797],
     zoom: 6,
@@ -6,7 +5,7 @@ var map = L.map('map', {
     zoomControl: true
 });
 
-// ✅ Keep existing working tile layer
+// Restore the working tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
@@ -15,7 +14,7 @@ map.getContainer().style.zIndex = "0";
 
 let geojsonLayer;
 
-// ✅ Keep colors for each company
+// Restore unique colors per company
 const companyColors = {};
 function getCompanyColor(company) {
     if (!companyColors[company]) {
@@ -25,27 +24,20 @@ function getCompanyColor(company) {
     return companyColors[company];
 }
 
-// ✅ Keep working shape loading logic
+// ✅ Restore Working Shape Loading
 function loadGeoJSON(supabaseData) {
-    if (!supabaseData || !Array.isArray(supabaseData)) {
-        console.error("Invalid GeoJSON data from Supabase:", supabaseData);
-        return;
-    }
-
     let geojson = {
         "type": "FeatureCollection",
         "features": supabaseData.map(item => ({
             "type": "Feature",
             "properties": {
-                "uid": item["UID"] || "Unknown",
-                "name": item["Nama Lokasi"] || "No Name",
-                "pemegang_wilus": item["Pemegang Wilus"] || "No Group"
+                "uid": item["UID"],
+                "name": item["Nama Lokasi"],
+                "pemegang_wilus": item["Pemegang Wilus"]
             },
             "geometry": JSON.parse(item["geom"])
         }))
     };
-
-    console.log("Final GeoJSON for Map:", geojson);
 
     if (geojsonLayer) {
         map.removeLayer(geojsonLayer);
@@ -67,7 +59,6 @@ function loadGeoJSON(supabaseData) {
         }
     }).addTo(map);
 
-    // ✅ Keep working sidebar logic
     populateCompanyFilters(supabaseData.map(item => ({
         uid: item["UID"],
         nama_lokasi: item["Nama Lokasi"],
