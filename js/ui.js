@@ -31,37 +31,48 @@ function zoomToFeature(uid) {
         }
     });
 
-    if (targetLayer) {
-        try {
-            // ✅ Jika fitur adalah polygon, gunakan fitBounds()
-            if (targetLayer.getBounds && typeof targetLayer.getBounds === "function") {
-                const bounds = targetLayer.getBounds();
-                if (bounds.isValid()) {
-                    map.fitBounds(bounds, { padding: [50, 50] });
-                    targetLayer.openPopup();
-                    return;
-                }
-            }
-            
-            // ✅ Jika fitur adalah titik, gunakan setView()
-            if (targetLayer.getLatLng && typeof targetLayer.getLatLng === "function") {
-                const latlng = targetLayer.getLatLng();
-                if (latlng) {
-                    map.setView(latlng, 14); // Zoom level 14 untuk titik
-                    targetLayer.openPopup();
-                    return;
-                }
-            }
-
-            // ❌ Jika tidak punya bounds atau koordinat, tampilkan peringatan
-            console.warn(`Feature UID "${uid}" has no valid bounds or coordinates.`);
-            alert(`Data untuk "${uid}" tidak memiliki lokasi yang bisa difokuskan.`);
-        } catch (error) {
-            console.error(`Error zooming to feature UID: ${uid}`, error);
-        }
-    } else {
+    if (!targetLayer) {
         console.warn(`Feature UID "${uid}" tidak ditemukan.`);
         alert(`Data untuk "${uid}" tidak ditemukan di peta.`);
+        return;
+    }
+
+    try {
+        // ✅ Debugging: Cek apakah layer punya geometry
+        console.log(`Debugging UID "${uid}"`, targetLayer.feature);
+
+        if (!targetLayer.feature.geometry) {
+            console.warn(`Feature UID "${uid}" tidak memiliki geometry.`);
+            alert(`Data untuk "${uid}" tidak memiliki bentuk wilayah.`);
+            return;
+        }
+
+        // ✅ Jika fitur adalah polygon, gunakan fitBounds()
+        if (targetLayer.getBounds && typeof targetLayer.getBounds === "function") {
+            const bounds = targetLayer.getBounds();
+            if (bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+                targetLayer.openPopup();
+                return;
+            }
+        }
+        
+        // ✅ Jika fitur adalah titik, gunakan setView()
+        if (targetLayer.getLatLng && typeof targetLayer.getLatLng === "function") {
+            const latlng = targetLayer.getLatLng();
+            if (latlng) {
+                map.setView(latlng, 14); // Zoom level 14 untuk titik
+                targetLayer.openPopup();
+                return;
+            }
+        }
+
+        // ❌ Jika tidak punya bounds atau koordinat, tampilkan peringatan
+        console.warn(`Feature UID "${uid}" has no valid bounds or coordinates.`);
+        alert(`Data untuk "${uid}" tidak memiliki lokasi yang bisa difokuskan.`);
+    } catch (error) {
+        console.error(`Error zooming to feature UID: ${uid}`, error);
     }
 }
+
 
