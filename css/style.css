@@ -6,36 +6,37 @@ body, html {
     font-family: Arial, sans-serif;
 }
 
-#map {
-    width: 100%;
+/* ✅ Sidebar (Left Panel) */
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
     height: 100vh;
+    background: white;
+    padding: 15px;
+    border-right: 2px solid #ddd;
+    overflow-y: auto;
+    z-index: 1002;
+}
+
+/* ✅ Map (Right Side) */
+#map {
     position: absolute;
+    top: 0;
+    left: 280px;
+    width: calc(100% - 280px);
+    height: 100vh;
     z-index: 0;
 }
 
-#sidebar {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-    z-index: 1002;
-    max-height: 70vh;
-    overflow-y: auto;
-    width: 280px;
-}
-/* ✅ Tambahkan padding dan garis pemisah antar item */
+/* ✅ List of "Pemegang Wilus" */
 .company-item {
     padding: 8px;
     background: #f8f9fa;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
-    display: block; /* Memastikan tiap item ada di baris baru */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: block;
 }
 
 .company-item:hover {
@@ -43,4 +44,10 @@ body, html {
     color: white;
 }
 
-
+/* ✅ Coordinate Checker */
+#coordinate-checker {
+    margin-top: 15px;
+    padding: 10px;
+    background: #eee;
+    border-radius: 5px;
+}
