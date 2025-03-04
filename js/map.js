@@ -1,19 +1,21 @@
+// ✅ Reverting to the version that worked before
 var map = L.map('map', {
-  center: [3.666854, 98.66797],
-  zoom: 6,
-  scrollWheelZoom: true,
-  zoomControl: true
+    center: [3.666854, 98.66797],
+    zoom: 6,
+    scrollWheelZoom: true,
+    zoomControl: true
 });
 
+// ✅ Keep existing working tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
+    attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
 map.getContainer().style.zIndex = "0";
 
 let geojsonLayer;
 
-// ✅ Assign unique colors for each "Pemegang Wilus"
+// ✅ Keep colors for each company
 const companyColors = {};
 function getCompanyColor(company) {
     if (!companyColors[company]) {
@@ -23,7 +25,7 @@ function getCompanyColor(company) {
     return companyColors[company];
 }
 
-// ✅ Load GeoJSON data & update the map
+// ✅ Keep working shape loading logic
 function loadGeoJSON(supabaseData) {
     if (!supabaseData || !Array.isArray(supabaseData)) {
         console.error("Invalid GeoJSON data from Supabase:", supabaseData);
@@ -65,6 +67,7 @@ function loadGeoJSON(supabaseData) {
         }
     }).addTo(map);
 
+    // ✅ Keep working sidebar logic
     populateCompanyFilters(supabaseData.map(item => ({
         uid: item["UID"],
         nama_lokasi: item["Nama Lokasi"],
