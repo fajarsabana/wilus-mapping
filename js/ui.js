@@ -1,13 +1,13 @@
 function populateCompanyFilters(companies) {
     const filterContainer = document.getElementById("company-filters");
-    filterContainer.innerHTML = ""; // Clear previous filters
+    filterContainer.innerHTML = ""; 
 
     companies.forEach(company => {
         let checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.value = company;
         checkbox.id = `filter-${company}`;
-        checkbox.checked = true; // Default to checked
+        checkbox.checked = true; 
 
         let label = document.createElement("label");
         label.htmlFor = `filter-${company}`;
@@ -20,14 +20,12 @@ function populateCompanyFilters(companies) {
         filterContainer.appendChild(div);
     });
 
-    // ✅ FIX: Make sure the filter event listener is added after UI is populated
     document.getElementById("company-filters").addEventListener("change", applyFilters);
 }
 
 async function loadDataAndApplyFilters() {
     const data = await loadData();
 
-    // ✅ FIX: Ensure geojsonData is properly formatted
     geojsonData = {
         "type": "FeatureCollection",
         "features": data.map(item => ({
@@ -37,14 +35,14 @@ async function loadDataAndApplyFilters() {
                 "name": item["Nama Lokasi"],
                 "company": item["Pemegang Wilus"]
             },
-            "geometry": JSON.parse(item.geom) // Convert string to GeoJSON object
+            "geometry": JSON.parse(item.geom)
         }))
     };
 
     const companies = [...new Set(data.map(item => item["Pemegang Wilus"]))];
     populateCompanyFilters(companies);
 
-    updateMap(geojsonData); // ✅ FIX: Ensure the full map loads initially
+    updateMap(geojsonData);
 }
 
 document.addEventListener("DOMContentLoaded", loadDataAndApplyFilters);
