@@ -17,6 +17,12 @@ async function loadData() {
 
         const data = await response.json();
         console.log("Supabase API Response:", data);
+
+        if (!Array.isArray(data) || data.length === 0) {
+            console.error("Supabase returned no data or invalid format!");
+            return;
+        }
+
         loadGeoJSON(data);
     } catch (error) {
         console.error("Error loading data from Supabase:", error);
