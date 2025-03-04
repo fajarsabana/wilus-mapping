@@ -19,10 +19,15 @@ function populateCompanyFilters(companies) {
 
         filterContainer.appendChild(div);
     });
+
+    // ✅ FIX: Make sure the filter event listener is added after UI is populated
+    document.getElementById("company-filters").addEventListener("change", applyFilters);
 }
 
 async function loadDataAndApplyFilters() {
     const data = await loadData();
+
+    // ✅ FIX: Ensure geojsonData is properly formatted
     geojsonData = {
         "type": "FeatureCollection",
         "features": data.map(item => ({
@@ -38,8 +43,8 @@ async function loadDataAndApplyFilters() {
 
     const companies = [...new Set(data.map(item => item["Pemegang Wilus"]))];
     populateCompanyFilters(companies);
-    updateMap(geojsonData);
+
+    updateMap(geojsonData); // ✅ FIX: Ensure the full map loads initially
 }
 
-document.getElementById("company-filters").addEventListener("change", applyFilters);
-loadDataAndApplyFilters();
+document.addEventListener("DOMContentLoaded", loadDataAndApplyFilters);
