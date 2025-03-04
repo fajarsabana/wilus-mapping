@@ -5,7 +5,7 @@ var map = L.map('map', {
     zoomControl: true
 });
 
-// Restore the working tile layer
+// ✅ Restore the working tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
@@ -14,7 +14,7 @@ map.getContainer().style.zIndex = "0";
 
 let geojsonLayer;
 
-// Restore unique colors per company
+// ✅ Restore unique colors per company
 const companyColors = {};
 function getCompanyColor(company) {
     if (!companyColors[company]) {
@@ -24,19 +24,30 @@ function getCompanyColor(company) {
     return companyColors[company];
 }
 
-// ✅ Restore Working Shape Loading
+// ✅ FIX: Handle `geom` parsing correctly
 function loadGeoJSON(supabaseData) {
     let geojson = {
         "type": "FeatureCollection",
-        "features": supabaseData.map(item => ({
-            "type": "Feature",
-            "properties": {
-                "uid": item["UID"],
-                "name": item["Nama Lokasi"],
-                "pemegang_wilus": item["Pemegang Wilus"]
-            },
-            "geometry": JSON.parse(item["geom"])
-        }))
+        "features": supabaseData.map(item => {
+            let geometry;
+            try {
+                // ✅ If `geom` is a string, parse it
+                geometry = typeof item["geom"] === "string" ? JSON.parse(item["geom"]) : item["geom"];
+            } catch (error) {
+                console.error("Error parsing geometry for item:", item, error);
+                return null; // Skip broken data
+            }
+
+            return {
+                "type": "Feature",
+                "properties": {
+                    "uid": item["UID"],
+                    "name": item["Nama Lokasi"],
+                    "pemegang_wilus": item["Pemegang Wilus"]
+                },
+                "geometry": geometry
+            };
+        }).filter(feature => feature !== null) // ✅ Remove broken entries
     };
 
     if (geojsonLayer) {
