@@ -5,7 +5,6 @@ var map = L.map('map', {
     zoomControl: true
 });
 
-// ✅ Restore the working tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
@@ -14,40 +13,28 @@ map.getContainer().style.zIndex = "0";
 
 let geojsonLayer;
 
-// ✅ Restore unique colors per company
+// ✅ Color by "Pemegang Wilus"
 const companyColors = {};
 function getCompanyColor(company) {
     if (!companyColors[company]) {
-        const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
-        companyColors[company] = randomColor;
+        companyColors[company] = `#${Math.floor(Math.random()*16777215).toString(16)}`;
     }
     return companyColors[company];
 }
 
-// ✅ FIX: Handle `geom` parsing correctly
+// ✅ Load GeoJSON Data
 function loadGeoJSON(supabaseData) {
     let geojson = {
         "type": "FeatureCollection",
-        "features": supabaseData.map(item => {
-            let geometry;
-            try {
-                // ✅ If `geom` is a string, parse it
-                geometry = typeof item["geom"] === "string" ? JSON.parse(item["geom"]) : item["geom"];
-            } catch (error) {
-                console.error("Error parsing geometry for item:", item, error);
-                return null; // Skip broken data
-            }
-
-            return {
-                "type": "Feature",
-                "properties": {
-                    "uid": item["UID"],
-                    "name": item["Nama Lokasi"],
-                    "pemegang_wilus": item["Pemegang Wilus"]
-                },
-                "geometry": geometry
-            };
-        }).filter(feature => feature !== null) // ✅ Remove broken entries
+        "features": supabaseData.map(item => ({
+            "type": "Feature",
+            "properties": {
+                "uid": item["UID"],
+                "name": item["Nama Lokasi"],
+                "pemegang_wilus": item["Pemegang Wilus"]
+            },
+            "geometry": JSON.parse(item["geom"])
+        }))
     };
 
     if (geojsonLayer) {
@@ -56,17 +43,10 @@ function loadGeoJSON(supabaseData) {
 
     geojsonLayer = L.geoJSON(geojson, {
         style: function(feature) {
-            return { 
-                color: getCompanyColor(feature.properties.pemegang_wilus), 
-                weight: 2, 
-                fillOpacity: 0.5 
-            };
+            return { color: getCompanyColor(feature.properties.pemegang_wilus), weight: 2, fillOpacity: 0.5 };
         },
         onEachFeature: function(feature, layer) {
-            if (feature.properties) {
-                let popupContent = `<b>${feature.properties.name}</b><br>Pemegang Wilus: ${feature.properties.pemegang_wilus}`;
-                layer.bindPopup(popupContent);
-            }
+            layer.bindPopup(`<b>${feature.properties.name}</b><br>Pemegang Wilus: ${feature.properties.pemegang_wilus}`);
         }
     }).addTo(map);
 
