@@ -15,11 +15,24 @@ map.getContainer().style.zIndex = "0";
 let geojsonLayer;
 let geojsonData = { "type": "FeatureCollection", "features": [] };
 
+// Generate a unique color for each company
+const companyColors = {};
+function getCompanyColor(company) {
+    if (!companyColors[company]) {
+        const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+        companyColors[company] = randomColor;
+    }
+    return companyColors[company];
+}
+
 function updateMap(filteredData) {
     if (geojsonLayer) {
         map.removeLayer(geojsonLayer);
     }
     geojsonLayer = L.geoJSON(filteredData, {
+        style: function(feature) {
+            return { color: getCompanyColor(feature.properties.company) };
+        },
         onEachFeature: function (feature, layer) {
             layer.bindPopup(`<b>${feature.properties.name}</b><br>${feature.properties.company}`);
         }
@@ -31,5 +44,3 @@ function applyFilters() {
     const filteredData = geojsonData.features.filter(feature => selectedCompanies.includes(feature.properties.company));
     updateMap({ "type": "FeatureCollection", "features": filteredData });
 }
-
-document.getElementById("company-filters").addEventListener("change", applyFilters);
