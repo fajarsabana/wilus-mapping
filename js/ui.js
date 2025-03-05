@@ -1,4 +1,5 @@
 function loadGeoJSON(supabaseData) {
+    generateWilusList(supabaseData);
     if (!supabaseData || !Array.isArray(supabaseData)) {
         console.error("Invalid GeoJSON data from Supabase:", supabaseData);
         return;
