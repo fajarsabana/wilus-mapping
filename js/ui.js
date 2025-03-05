@@ -57,3 +57,44 @@ function loadGeoJSON(supabaseData) {
         }
     }).addTo(map);
 }
+
+function generateWilusList(supabaseData) {
+    let container = document.getElementById("wilus-list"); // Make sure this exists in index.html
+    if (!container) {
+        console.error("❌ ERROR: 'wilus-list' div not found in HTML!");
+        return;
+    }
+
+    container.innerHTML = ""; // Clear existing content
+
+    // Group locations by owner
+    let groupedData = {};
+    supabaseData.forEach(item => {
+        let owner = item["Pemegang Wilus"];
+        let location = item["Nama Lokasi"];
+
+        if (!groupedData[owner]) {
+            groupedData[owner] = [];
+        }
+        groupedData[owner].push(location);
+    });
+
+    // Create list elements
+    Object.keys(groupedData).forEach(owner => {
+        let ownerElement = document.createElement("div");
+        ownerElement.innerHTML = `<strong>📌 ${owner}</strong>`;
+        
+        let subList = document.createElement("ul");
+        groupedData[owner].forEach(location => {
+            let locationItem = document.createElement("li");
+            locationItem.textContent = location;
+            subList.appendChild(locationItem);
+        });
+
+        ownerElement.appendChild(subList);
+        container.appendChild(ownerElement);
+    });
+
+    console.log("🟢 SUCCESS: Wilus list generated!");
+}
+
