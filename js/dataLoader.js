@@ -2,19 +2,12 @@ import { supabase } from "./config.js";
 
 async function loadData() {
     try {
-        const response = await fetch(`${supabaseUrl}/rest/v1/wilus_mapping?select=UID,Nama Lokasi,Pemegang Wilus,geom`, {
-            headers: {
-                "apikey": supabaseKey,
-                "Authorization": `Bearer ${supabaseKey}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const { data, error } = await supabase
+            .from("wilus_mapping")
+            .select("UID, Nama Lokasi, Pemegang Wilus, geom");
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        if (error) throw error;
 
-        const data = await response.json();
         console.log("Supabase API Response:", data);
         loadGeoJSON(data);
     } catch (error) {
