@@ -35,33 +35,42 @@ function loadGeoJSON(supabaseData) {
     applyFilter(geojson);
 }
 
-// Ensure filter dropdown is populated with unique owner names
-function updateFilterOptions(supabaseData) {
-    let filterDropdown = document.getElementById("filterDropdown");
-    filterDropdown.innerHTML = '<option value="all">All</option>'; 
+function updateCompanyFilters(supabaseData) {
+    let filterContainer = document.getElementById("company-filters"); 
+    
+    if (!filterContainer) {
+        console.error("❌ ERROR: 'company-filters' div not found in HTML!");
+        return;
+    }
 
-    let uniqueOwners = [...new Set(supabaseData.map(item => item["Pemegang Wilus"]))];
-    uniqueOwners.forEach(owner => {
+    filterContainer.innerHTML = ""; // Clear old content
+
+    let label = document.createElement("label");
+    label.textContent = "Filter by Company: ";
+    filterContainer.appendChild(label);
+
+    let filterDropdown = document.createElement("select");
+    filterDropdown.id = "filterDropdown";
+    filterDropdown.innerHTML = '<option value="all">All</option>'; // Default option
+
+    // Get unique company names
+    let uniqueCompanies = [...new Set(supabaseData.map(item => item["Pemegang Wilus"]))];
+
+    uniqueCompanies.forEach(company => {
         let option = document.createElement("option");
-        option.value = owner;
-        option.textContent = owner;
+        option.value = company;
+        option.textContent = company;
         filterDropdown.appendChild(option);
     });
 
-    filterDropdown.addEventListener("change", () => applyFilter());
+    filterContainer.appendChild(filterDropdown);
+
+    // 🚀 Pastikan event listener KE-TRIGGER PAS dropdown ada
+    filterDropdown.addEventListener("change", applyFilter);
+
+    console.log("🟢 SUCCESS: Filter dropdown added!");
 }
 
-// Apply filtering logic
-function applyFilter() {
-    let selectedOwner = document.getElementById("filterDropdown").value;
-    
-    let filteredFeatures = geojson.features.filter(feature => 
-        selectedOwner === "all" || feature.properties.owner === selectedOwner
-    );
-
-    if (filteredFeatures.length === 0) {
-        console.warn("⚠️ No matching data for selected filter.");
-    }
 
     // Clear existing map layers
     map.eachLayer(layer => {
