@@ -1,15 +1,15 @@
-function loadGeoJSON(data) {
-    const map = L.map("map").setView([-2.5489, 118.0149], 5);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+// Initialize the map
+var map = L.map('map', {
+  center: [3.666854, 98.66797],
+  zoom: 12,
+  scrollWheelZoom: true, // Enable scroll zoom
+  zoomControl: true // Ensure zoom controls are visible
+});
 
-    data.forEach(item => {
-        if (item.geom) {
-            const geoJsonFeature = {
-                "type": "Feature",
-                "properties": { "name": item["Nama Lokasi"], "owner": item["Pemegang Wilus"] },
-                "geometry": JSON.parse(item.geom)
-            };
-            L.geoJSON(geoJsonFeature).addTo(map);
-        }
-    });
-}
+// Load OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+// Ensure UI elements remain on top
+map.getContainer().style.zIndex = "0";
