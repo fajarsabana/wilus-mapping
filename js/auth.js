@@ -1,4 +1,8 @@
-import { supabase } from "./config.js";  // ✅ Ensure import is correct
+import { supabase } from "./config.js";  
+
+document.addEventListener("DOMContentLoaded", function () {
+    checkAuthentication();
+});
 
 async function loadData() {
     try {
