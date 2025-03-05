@@ -2,52 +2,74 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
+    overflow: hidden; /* Prevent unnecessary scrolling */
 }
 
-/* ✅ Sidebar (Left Panel) */
-#sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 280px;
+#map {
+    width: 100%;
     height: 100vh;
+    position: absolute;
+    z-index: 0; /* Map stays behind UI elements */
+}
+
+/* Sidebar (Company Filter) */
+#sidebar {
+    position: fixed; /* Keep sidebar fixed on screen */
+    top: 20px;
+    left: 20px;
     background: white;
     padding: 15px;
-    border-right: 2px solid #ddd;
-    overflow-y: auto;
-    z-index: 1002;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1002; /* Ensure sidebar stays on top */
+    max-height: 40vh; /* Ensure space for coordinate input */
+    overflow-y: auto; /* Scrollable if too many companies */
+    width: 250px;
+    pointer-events: auto; /* Ensure interactions work */
 }
 
-/* ✅ Map (Right Side) */
-#map {
-    position: absolute;
-    top: 0;
-    left: 280px;
-    width: calc(100% - 280px);
-    height: 100vh;
-    z-index: 0;
-}
-
-/* ✅ List of "Pemegang Wilus" */
-.company-item {
-    padding: 8px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-    display: block;
-}
-
-.company-item:hover {
-    background: #007bff;
-    color: white;
-}
-
-/* ✅ Coordinate Checker */
+/* Coordinate Checker */
 #coordinate-checker {
-    margin-top: 15px;
+    position: fixed; /* Keep it fixed on screen */
+    top: calc(20px + 50vh); /* Adjust placement dynamically */
+    left: 20px;
+    background: white;
     padding: 10px;
-    background: #eee;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1002;
+    width: 250px;
+    pointer-events: auto;
+    overflow-y: auto; /* Allow scrolling if needed */
+}
+
+#sidebar h2 {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+#company-filters label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+#coordinate-checker label {
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+#coordinate-checker button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
     border-radius: 5px;
+    cursor: pointer;
+}
+
+#coordinate-checker button:hover {
+    background-color: #0056b3;
 }
