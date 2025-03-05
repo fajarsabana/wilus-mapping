@@ -9,7 +9,11 @@ async function loadData() {
         if (error) throw error;
 
         console.log("Supabase API Response:", data);
-        loadGeoJSON(data);
+        if (data.length > 0) {
+            loadGeoJSON(data);
+        } else {
+            console.warn("No data received from Supabase");
+        }
     } catch (error) {
         console.error("Error loading data:", error);
     }
