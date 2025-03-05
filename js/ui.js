@@ -32,7 +32,7 @@ function loadGeoJSON(supabaseData) {
             };
         }).filter(feature => feature !== null)  // Remove invalid features
     };
-
+updateCompanyFilters(supabaseData);
     console.log("Final GeoJSON for Map:", geojson);
 
     // Check if there are valid features before adding them to the map
