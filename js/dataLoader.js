@@ -1,3 +1,4 @@
+const { supabase } = require("./config");
 async function loadData() {
     try {
         const response = await fetch(`${supabaseUrl}/rest/v1/wilus_mapping?select=UID,Nama Lokasi,Pemegang Wilus,geom`, {
