@@ -1,3 +1,4 @@
+const { supabase } = require("./config");
 document.addEventListener("DOMContentLoaded", function () {
     checkAuthentication();
 });
