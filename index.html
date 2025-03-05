@@ -3,38 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wilus Mapping</title>
-
+    <title>PLN Mapping</title>
+    
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css"> <!-- Custom styles -->
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js" defer></script>
 </head>
 <body>
 
+    <!-- Sidebar for Filtering Companies -->
     <div id="sidebar">
-        <h2>Wilus Mapping</h2>
+        <h2>Filter by Company</h2>
         <div id="company-filters"></div>
-
-        <div id="coordinate-checker">
-            <h3>Check Coordinate</h3>
-            <label>Latitude: <input type="number" id="latInput" step="any"></label>
-            <label>Longitude: <input type="number" id="lngInput" step="any"></label>
-            <button onclick="checkCoordinate()">Check</button>
-            <p id="result"></p>
-        </div>
     </div>
 
+    <!-- Coordinate Input Checker -->
+    <div id="coordinate-checker">
+        <h2>Check Coordinate</h2>
+        <label>Latitude: <input type="number" id="latInput" step="any"></label>
+        <label>Longitude: <input type="number" id="lngInput" step="any"></label>
+        <button onclick="checkCoordinate()">Check</button>
+        <p id="result"></p>
+    </div>
+
+    <!-- Map Container -->
     <div id="map"></div>
-<script type="module" src="js/config.js"></script>
-<script type="module" src="js/auth.js"></script>
-<script type="module" src="js/dataLoader.js"></script>
-<script type="module" src="js/map.js"></script>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" defer></script>
 
-<button onclick="logout()">Logout</button>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/map.js"></script>
+    <!-- Custom Scripts -->
+    <script src="js/map.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/dataLoader.js" defer></script>
 
 </body>
 </html>
