@@ -1,20 +1,20 @@
 import { listWilus } from "./listWilus.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-    listWilus(); // Call the function to list Pemegang Wilus
+document.addEventListener("DOMContentLoaded", async () => {
+    await displayWilusList();
 });
 
-function displayWilusList() {
-    const listContainer = document.getElementById("wilus-list"); // Ensure you have a div with id="wilus-list" in HTML
+async function displayWilusList() {
+    const listContainer = document.getElementById("wilus-list");
     if (!listContainer) return;
 
-    listWilus().then(data => {
-        listContainer.innerHTML = ""; // Clear previous content
-        data.forEach(item => {
-            const listItem = document.createElement("p");
-            listItem.textContent = `${item.pemegangWilus} - ${item.namaLokasi}`;
-            listContainer.appendChild(listItem);
-        });
+    const data = await listWilus();
+
+    listContainer.innerHTML = ""; // Clear previous content
+    data.forEach(item => {
+        const listItem = document.createElement("p");
+        listItem.textContent = `${item.pemegangWilus} - ${item.namaLokasi}`;
+        listContainer.appendChild(listItem);
     });
 }
 
