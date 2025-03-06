@@ -29,5 +29,15 @@ async function loadData() {
     }
 }
 
+export function loadGeoJSON() {
+    return fetch("./data/areas.geojson")
+        .then(response => response.json())
+        .catch(error => {
+            console.error("Error loading GeoJSON:", error);
+            return null;
+        });
+}
+
+
 // Start fetching data on page load
 loadData();
