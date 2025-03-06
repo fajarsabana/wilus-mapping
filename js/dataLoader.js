@@ -8,7 +8,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 export async function loadGeoJSON() {
     try {
         const { data, error } = await supabase
-            .from("wilus-mapping") // Ensure this matches your table name
+            .from("wilus_mapping") // Ensure this matches your table name
             .select("id, UID, geom, \"Pemegang Wilus\", \"Nama Lokasi\"");
 
         if (error) throw error;
