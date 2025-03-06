@@ -18,7 +18,6 @@ async function displayWilusList() {
     });
 }
 
-
 function loadGeoJSON(supabaseData) {
     generateWilusList(supabaseData);
     if (!supabaseData || !Array.isArray(supabaseData)) {
