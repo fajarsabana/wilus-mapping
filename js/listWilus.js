@@ -9,8 +9,9 @@ export async function listWilus() {
     }
 
     const wilusList = data.features.map(feature => ({
-        pemegangWilus: feature.properties.Pemegang_Wilus || "Unknown",
-        namaLokasi: feature.properties.Nama_Lokasi || "Unknown"
+        pemegangWilus: feature.properties.Pemegang_Wilus || "No Data",
+        namaLokasi: feature.properties.Nama_Lokasi || "No Data",
+        uid: feature.properties.UID || "No UID"
     }));
 
     console.log("List of Pemegang Wilus:", wilusList);
