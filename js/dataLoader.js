@@ -1,43 +1,34 @@
-const supabaseUrl = "https://jqueqchgsazhompvfifr.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxdWVxY2hnc2F6aG9tcHZmaWZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NzM5MDIsImV4cCI6MjA1NjU0OTkwMn0.8q1m-jIL4kRgck4pwDfOYFHgFMSg2BIfBSTgIWBc_PE";  // Replace with your actual API key
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-async function loadData() {
+const SUPABASE_URL = "https://jqueqchgsazhompvfifr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxdWVxY2hnc2F6aG9tcHZmaWZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NzM5MDIsImV4cCI6MjA1NjU0OTkwMn0.8q1m-jIL4kRgck4pwDfOYFHgFMSg2BIfBSTgIWBc_PE";  // Replace with your actual API key
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+export async function loadGeoJSON() {
     try {
-        // Ensure column names match exactly (including quotes for spaces)
-        const response = await fetch(`${supabaseUrl}/rest/v1/wilus_mapping?select="UID","Nama Lokasi","Pemegang Wilus","geom"`, {
-            headers: {
-                "apikey": supabaseKey,
-                "Authorization": `Bearer ${supabaseKey}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const { data, error } = await supabase
+            .from("your_table_name") // Replace with your actual table name
+            .select("*");
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        if (error) throw error;
 
-        const data = await response.json();
-        console.log("Supabase API Response:", data); // Debugging log
-
-        if (!data || !Array.isArray(data)) {
-            throw new Error("Supabase response is not an array or is empty.");
-        }
-
-        loadGeoJSON(data);
-    } catch (error) {
-        console.error("Error loading data from Supabase:", error);
+        return {
+            type: "FeatureCollection",
+            features: data.map(item => ({
+                type: "Feature",
+                geometry: {
+                    type: "Point",
+                    coordinates: [item.longitude, item.latitude] // Adjust according to your schema
+                },
+                properties: {
+                    Pemegang_Wilus: item.pemegang_wilus,
+                    Nama_Lokasi: item.nama_lokasi
+                }
+            }))
+        };
+    } catch (err) {
+        console.error("Error loading data from Supabase:", err);
+        return null;
     }
 }
-
-export function loadGeoJSON() {
-    return fetch("./data/areas.geojson")
-        .then(response => response.json())
-        .catch(error => {
-            console.error("Error loading GeoJSON:", error);
-            return null;
-        });
-}
-
-
-// Start fetching data on page load
-loadData();
