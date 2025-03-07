@@ -1,33 +1,28 @@
-// Initialize the map
-var map = L.map('map', {
-  center: [3.666854, 98.66797],
-  zoom: 12,
-  scrollWheelZoom: true,
-  zoomControl: true
-});
-
-// Load OpenStreetMap tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-// Ensure UI elements remain on top
-map.getContainer().style.zIndex = "0";
-
 // Function to reload the map layers dynamically
 function reloadMap(geojsonData) {
     if (!geojsonData || !geojsonData.features) {
-        console.warn("No valid data to reload the map.");
+        console.warn("⚠️ No valid data to reload the map.");
         return;
     }
+
+    console.log("🗺️ Reloading map with data:", geojsonData);
 
     // Remove existing layers
     if (window.wilusLayer) {
         map.removeLayer(window.wilusLayer);
     }
 
-    // Add new data to the map
-    window.wilusLayer = L.geoJSON(geojsonData, {
+    // Ensure valid geometry exists before adding
+    const validFeatures = geojsonData.features.filter(feature => feature.geometry !== null);
+    
+    if (validFeatures.length === 0) {
+        console.warn("❌ No valid features to display.");
+        return;
+    }
+
+    console.log("✅ Adding", validFeatures.length, "features to the map.");
+
+    window.wilusLayer = L.geoJSON({ type: "FeatureCollection", features: validFeatures }, {
         style: function(feature) {
             return { color: "green", weight: 2, fillOpacity: 0.5 };
         },
