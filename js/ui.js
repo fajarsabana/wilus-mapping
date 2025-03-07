@@ -60,28 +60,28 @@ function loadGeoJSON(supabaseData) {
 
 async function listWilusLocations() {
     try {
-        const response = await fetch('./data/areas.geojson');
+        const response = await fetch('data/areas.geojson');
         const geojson = await response.json();
 
-        if (!geojson || !geojson.features) {
-            console.error('Invalid GeoJSON data');
-            return;
-        }
+        const wilusList = geojson.features.map(feature => ({
+            pemegangWilus: feature.properties["Pemegang Wilus"],
+            namaLokasi: feature.properties["Nama Lokasi"]
+        }));
 
-        let locations = geojson.features.map(feature => {
-            return {
-                pemegangWilus: feature.properties["Pemegang Wilus"] || 'Unknown',
-                namaLokasi: feature.properties["Nama Lokasi"] || 'Unknown'
-            };
-        });
-
-        return locations;
+        console.log(wilusList); // Debugging: log the list to console
+        return wilusList;
     } catch (error) {
-        console.error('Error loading Wilus data:', error);
-        return [];
+        console.error("Error fetching or processing GeoJSON:", error);
     }
 }
 
-// Example usage
-listWilusLocations().then(locations => console.log(locations));
+// Example usage: Call the function and handle the data
+listWilusLocations().then(data => {
+    if (data) {
+        data.forEach(item => {
+            console.log(`Pemegang Wilus: ${item.pemegangWilus}, Nama Lokasi: ${item.namaLokasi}`);
+        });
+    }
+});
+
 
