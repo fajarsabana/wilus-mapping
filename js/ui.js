@@ -1,12 +1,40 @@
-let geojson = {}; // Define globally
+// Ensure geojson is properly assigned before accessing it
+function listWilusLocations() {
+    if (!geojson || !geojson.features) {
+        console.error("GeoJSON data is missing or invalid.");
+        return [];
+    }
 
+    const wilusList = geojson.features.map(feature => ({
+        pemegangWilus: feature.properties.pemegangWilus,
+        namaLokasi: feature.properties.namaLokasi
+    }));
+
+    console.log("Wilus List:", wilusList);
+    return wilusList;
+}
+
+// Function to process and display Wilus data after geojson is ready
+function processWilusData() {
+    if (!geojson || !geojson.features || geojson.features.length === 0) {
+        console.warn("GeoJSON data is not ready yet.");
+        return;
+    }
+
+    const wilusData = listWilusLocations();
+    wilusData.forEach(item => {
+        console.log(`Pemegang Wilus: ${item.pemegangWilus}, Nama Lokasi: ${item.namaLokasi}`);
+    });
+}
+
+// 🔥 Modify loadGeoJSON in `dataLoader.js` to call processWilusData()
 function loadGeoJSON(supabaseData) {
     if (!supabaseData || !Array.isArray(supabaseData)) {
         console.error("Invalid GeoJSON data from Supabase:", supabaseData);
         return;
     }
 
-    geojson = {  // Now assigns to the global variable
+    geojson = {  
         "type": "FeatureCollection",
         "features": supabaseData.map(item => {
             if (!item["geom"]) {
@@ -31,7 +59,7 @@ function loadGeoJSON(supabaseData) {
                 },
                 "geometry": geometry
             };
-        }).filter(feature => feature !== null)  // Remove invalid features
+        }).filter(feature => feature !== null) 
     };
 
     console.log("Final GeoJSON for Map:", geojson);
@@ -41,6 +69,7 @@ function loadGeoJSON(supabaseData) {
         return;
     }
 
+    // Add the GeoJSON to the map
     L.geoJSON(geojson, {
         style: function(feature) {
             return {
@@ -56,30 +85,7 @@ function loadGeoJSON(supabaseData) {
             }
         }
     }).addTo(map);
+
+    // ✅ Now that geojson is ready, process Wilus data
+    processWilusData();
 }
-
-// Function to List Pemegang Wilus & Nama Lokasi
-function listWilusLocations() {
-    if (!geojson || !geojson.features) {
-        console.error("GeoJSON data is missing or invalid.");
-        return [];
-    }
-
-    const wilusList = geojson.features.map(feature => ({
-        pemegangWilus: feature.properties.pemegangWilus,
-        namaLokasi: feature.properties.namaLokasi
-    }));
-
-    console.log("Wilus List:", wilusList);
-    return wilusList;
-}
-
-// Example usage: Call listWilusLocations() after geojson is loaded
-function processWilusData() {
-    const wilusData = listWilusLocations();
-    wilusData.forEach(item => {
-        console.log(`Pemegang Wilus: ${item.pemegangWilus}, Nama Lokasi: ${item.namaLokasi}`);
-    });
-}
-
-// Call this function after data is fetched
