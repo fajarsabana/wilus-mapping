@@ -21,10 +21,6 @@ function processWilusData() {
         return;
     }
 
-    const wilusData = listWilusLocations();
-    wilusData.forEach(item => {
-        console.log(`Pemegang Wilus: ${item.pemegangWilus}, Nama Lokasi: ${item.namaLokasi}`);
-    });
 }
 
 // 🔥 Modify loadGeoJSON in `dataLoader.js` to call processWilusData()
