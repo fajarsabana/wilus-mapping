@@ -112,4 +112,4 @@ function processWilusData() {
 
     displayWilusList(); // Call this function to update index.html
 }
-
+}
