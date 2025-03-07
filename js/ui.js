@@ -81,3 +81,35 @@ function loadGeoJSON(supabaseData) {
             }
         }
     }).addTo(map);
+
+    function displayWilusList() {
+    if (!geojson || !geojson.features) {
+        console.error("GeoJSON data is missing or invalid.");
+        return;
+    }
+
+    const wilusList = document.getElementById("wilus-list");
+    wilusList.innerHTML = ""; // Clear previous content
+
+    geojson.features.forEach(feature => {
+        const pemegangWilus = feature.properties.pemegangWilus || "Unknown";
+        const namaLokasi = feature.properties.namaLokasi || "No Name";
+
+        const listItem = document.createElement("li");
+        listItem.textContent = `🗺️ ${namaLokasi} - 📌 ${pemegangWilus}`;
+        wilusList.appendChild(listItem);
+    });
+
+    console.log("Wilus List Displayed on Page.");
+}
+
+// ✅ Ensure this runs after `geojson` is loaded
+function processWilusData() {
+    if (!geojson || !geojson.features || geojson.features.length === 0) {
+        console.warn("GeoJSON data is not ready yet.");
+        return;
+    }
+
+    displayWilusList(); // Call this function to update index.html
+}
+
