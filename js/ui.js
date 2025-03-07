@@ -1,10 +1,12 @@
+let geojson = {}; // Define globally
+
 function loadGeoJSON(supabaseData) {
     if (!supabaseData || !Array.isArray(supabaseData)) {
         console.error("Invalid GeoJSON data from Supabase:", supabaseData);
         return;
     }
 
-    let geojson = {
+    geojson = {  // Now assigns to the global variable
         "type": "FeatureCollection",
         "features": supabaseData.map(item => {
             if (!item["geom"]) {
@@ -14,7 +16,6 @@ function loadGeoJSON(supabaseData) {
 
             let geometry;
             try {
-                // If `geom` is already an object, use it directly; otherwise, parse it
                 geometry = (typeof item["geom"] === "object") ? item["geom"] : JSON.parse(item["geom"]);
             } catch (error) {
                 console.error("Error parsing geometry for item:", item, error);
@@ -25,8 +26,8 @@ function loadGeoJSON(supabaseData) {
                 "type": "Feature",
                 "properties": {
                     "uid": item["UID"] || "Unknown",
-                    "name": item["Nama Lokasi"] || "No Name",
-                    "pemegang_wilus": item["Pemegang Wilus"] || "No Group"
+                    "namaLokasi": item["Nama Lokasi"] || "No Name",
+                    "pemegangWilus": item["Pemegang Wilus"] || "No Group"
                 },
                 "geometry": geometry
             };
@@ -35,7 +36,6 @@ function loadGeoJSON(supabaseData) {
 
     console.log("Final GeoJSON for Map:", geojson);
 
-    // Check if there are valid features before adding them to the map
     if (geojson.features.length === 0) {
         console.warn("No valid features found, skipping map update.");
         return;
@@ -51,36 +51,35 @@ function loadGeoJSON(supabaseData) {
         },
         onEachFeature: function(feature, layer) {
             if (feature.properties) {
-                let popupContent = `<b>${feature.properties.name}</b><br>Pemegang Wilus: ${feature.properties.pemegang_wilus}`;
+                let popupContent = `<b>${feature.properties.namaLokasi}</b><br>Pemegang Wilus: ${feature.properties.pemegangWilus}`;
                 layer.bindPopup(popupContent);
             }
         }
     }).addTo(map);
 }
 
-function listWilusLocations(geojson) {
+// Function to List Pemegang Wilus & Nama Lokasi
+function listWilusLocations() {
     if (!geojson || !geojson.features) {
         console.error("GeoJSON data is missing or invalid.");
         return [];
     }
 
     const wilusList = geojson.features.map(feature => ({
-        pemegangWilus: feature.properties["Pemegang Wilus"],
-        namaLokasi: feature.properties["Nama Lokasi"]
+        pemegangWilus: feature.properties.pemegangWilus,
+        namaLokasi: feature.properties.namaLokasi
     }));
 
-    console.log(wilusList); // Debugging: log the list to console
+    console.log("Wilus List:", wilusList);
     return wilusList;
 }
 
-// Example usage after geojson is loaded
-if (typeof geojson !== 'undefined') {
-    const wilusData = listWilusLocations(geojson);
+// Example usage: Call listWilusLocations() after geojson is loaded
+function processWilusData() {
+    const wilusData = listWilusLocations();
     wilusData.forEach(item => {
         console.log(`Pemegang Wilus: ${item.pemegangWilus}, Nama Lokasi: ${item.namaLokasi}`);
     });
-} else {
-    console.error("GeoJSON data is not available yet.");
 }
 
-
+// Call this function after data is fetched
