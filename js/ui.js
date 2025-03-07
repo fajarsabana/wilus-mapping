@@ -1,33 +1,20 @@
 import { listWilus } from "./listWilus.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("🟢 UI Initialized.");
     await displayWilusList();
 });
 
 async function displayWilusList() {
     const listContainer = document.getElementById("wilus-list");
-    
+    if (!listContainer) return;
     if (!listContainer) { 
-        console.error("❌ ERROR: Sidebar list container not found!"); 
+        console.error("Sidebar list container not found!"); 
         return; 
     }
 
-    console.log("📡 Fetching Wilus list...");
     const data = await listWilus();
-    
-    if (!data || data.length === 0) {
-        console.warn("⚠️ No Wilus data found.");
-        listContainer.innerHTML = "<p>No data available.</p>";
-        return;
-    }
 
-    console.log("✅ Wilus data received:", data);
-
-    listContainer.innerHTML = ""; // Clear previous content
-    data.forEach(item => {
-        const listItem = document.createElement("p");
-        listItem.textContent = `${item.pemegangWilus} - ${item.namaLokasi}`;
+@@ -17,105 +20,3 @@
         listContainer.appendChild(listItem);
     });
 }
@@ -91,4 +78,44 @@ function loadGeoJSON(supabaseData) {
             }
         }
     }).addTo(map);
+}
+
+function generateWilusList(supabaseData) {
+    let container = document.getElementById("wilus-list"); // Make sure this exists in index.html
+    if (!container) {
+        console.error("❌ ERROR: 'wilus-list' div not found in HTML!");
+        return;
+    }
+
+    container.innerHTML = ""; // Clear existing content
+
+    // Group locations by owner
+    let groupedData = {};
+    supabaseData.forEach(item => {
+        let owner = item["Pemegang Wilus"];
+        let location = item["Nama Lokasi"];
+
+        if (!groupedData[owner]) {
+            groupedData[owner] = [];
+        }
+        groupedData[owner].push(location);
+    });
+
+    // Create list elements
+    Object.keys(groupedData).forEach(owner => {
+        let ownerElement = document.createElement("div");
+        ownerElement.innerHTML = `<strong>📌 ${owner}</strong>`;
+        
+        let subList = document.createElement("ul");
+        groupedData[owner].forEach(location => {
+            let locationItem = document.createElement("li");
+            locationItem.textContent = location;
+            subList.appendChild(locationItem);
+        });
+
+        ownerElement.appendChild(subList);
+        container.appendChild(ownerElement);
+    });
+
+    console.log("🟢 SUCCESS: Wilus list generated!");
 }
