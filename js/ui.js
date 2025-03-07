@@ -75,13 +75,4 @@ async function listWilusLocations() {
     }
 }
 
-// Example usage: Call the function and handle the data
-listWilusLocations().then(data => {
-    if (data) {
-        data.forEach(item => {
-            console.log(`Pemegang Wilus: ${item.pemegangWilus}, Nama Lokasi: ${item.namaLokasi}`);
-        });
-    }
-});
-
 
