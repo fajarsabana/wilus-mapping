@@ -85,7 +85,3 @@ function loadGeoJSON(supabaseData) {
             }
         }
     }).addTo(map);
-
-    // ✅ Now that geojson is ready, process Wilus data
-    processWilusData();
-}
