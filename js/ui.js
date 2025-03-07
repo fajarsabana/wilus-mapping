@@ -58,21 +58,29 @@ function loadGeoJSON(supabaseData) {
     }).addTo(map);
 }
 
-async function listWilusLocations() {
-    try {
-        const response = await fetch('data/areas.geojson');
-        const geojson = await response.json();
-
-        const wilusList = geojson.features.map(feature => ({
-            pemegangWilus: feature.properties["Pemegang Wilus"],
-            namaLokasi: feature.properties["Nama Lokasi"]
-        }));
-
-        console.log(wilusList); // Debugging: log the list to console
-        return wilusList;
-    } catch (error) {
-        console.error("Error fetching or processing GeoJSON:", error);
+function listWilusLocations(geojson) {
+    if (!geojson || !geojson.features) {
+        console.error("GeoJSON data is missing or invalid.");
+        return [];
     }
+
+    const wilusList = geojson.features.map(feature => ({
+        pemegangWilus: feature.properties["Pemegang Wilus"],
+        namaLokasi: feature.properties["Nama Lokasi"]
+    }));
+
+    console.log(wilusList); // Debugging: log the list to console
+    return wilusList;
+}
+
+// Example usage after geojson is loaded
+if (typeof geojson !== 'undefined') {
+    const wilusData = listWilusLocations(geojson);
+    wilusData.forEach(item => {
+        console.log(`Pemegang Wilus: ${item.pemegangWilus}, Nama Lokasi: ${item.namaLokasi}`);
+    });
+} else {
+    console.error("GeoJSON data is not available yet.");
 }
 
 
