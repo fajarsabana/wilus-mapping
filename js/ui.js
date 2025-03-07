@@ -57,3 +57,31 @@ function loadGeoJSON(supabaseData) {
         }
     }).addTo(map);
 }
+
+async function listWilusLocations() {
+    try {
+        const response = await fetch('./data/areas.geojson');
+        const geojson = await response.json();
+
+        if (!geojson || !geojson.features) {
+            console.error('Invalid GeoJSON data');
+            return;
+        }
+
+        let locations = geojson.features.map(feature => {
+            return {
+                pemegangWilus: feature.properties["Pemegang Wilus"] || 'Unknown',
+                namaLokasi: feature.properties["Nama Lokasi"] || 'Unknown'
+            };
+        });
+
+        return locations;
+    } catch (error) {
+        console.error('Error loading Wilus data:', error);
+        return [];
+    }
+}
+
+// Example usage
+listWilusLocations().then(locations => console.log(locations));
+
